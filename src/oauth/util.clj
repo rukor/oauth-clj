@@ -90,9 +90,11 @@
   "Parse the body of `request` as an URL encoded parameter list."
   [request]
   (let [body (to-str (:body request))]
-    (if-not (blank? body)
+    (if (and (= (:content-type request) x-www-form-urlencoded)
+             (not (blank? body)))
       (-> (apply hash-map (split body #"[=&]"))
-          (transform-values url-decode)))))
+          (transform-values url-decode))
+      {})))
 
 (defn percent-encode
   "Percent encode `unencoded` according to RFC 3986, Section 2.1."
